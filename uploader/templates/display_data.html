@@ -24,15 +24,34 @@
             margin-right: 10px;
         }
 
+        .search-button {
+        background-color: #4CAF50; /* Green background color */
+        color: white; /* White text color */
+        border: none; /* No border */
+        padding: 10px 20px; /* Padding */
+        text-align: center; /* Center text */
+        text-decoration: none; /* No text decoration */
+        display: inline-block; /* Inline block display */
+        font-size: 16px; /* Font size */
+        margin: 4px 2px; /* Margin */
+        cursor: pointer; /* Cursor style */
+        border-radius: 4px; /* Border radius */
+    }
+
     </style>
 </head>
 <body>
-    <h1>Lifetest List</h1>
+    <h1>Player List</h1>
     <form method="get">
         {{ search_form.query.label_tag }}
         {{ search_form.query }}
         <button type="submit">Search</button>
     </form>
+    <div>
+        
+        <a href="{% url 'add_product' %}" class="button search-button">Add Data</a>
+
+    </div>
     <table>
         <thead>
             <tr>

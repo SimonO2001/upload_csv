@@ -41,6 +41,7 @@ class UploadView(View):
 
 
 
+
 from django.shortcuts import render
 from .models import Product
 from .forms import SearchForm
@@ -84,3 +85,18 @@ def delete_product(request, product_id):
         return redirect('display_data')  # Redirect to the data display page after deletion
 
     return render(request, 'delete_product.html', {'product': product})
+
+from django.shortcuts import render, redirect
+from .forms import AddProductForm
+
+def add_product(request):
+    if request.method == 'POST':
+        form = AddProductForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('display_data')  # Redirect to the data display page after adding
+
+    else:
+        form = AddProductForm()
+
+    return render(request, 'add_product.html', {'form': form})

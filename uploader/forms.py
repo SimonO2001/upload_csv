@@ -18,3 +18,10 @@ class UploadForm(Form):
 
 class SearchForm(forms.Form):
     query = forms.CharField(label='Search', required=False)
+
+
+class AddProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ["Lokation", "KundeID", "MACadd", "Model", "SerieNr", "Navn", "GatewayIP", "Noter", "Journalsystem", "Analyzers", "SIMnr"]
+
