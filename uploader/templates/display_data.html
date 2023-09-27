@@ -1,0 +1,59 @@
+<!-- uploader/templates/uploader/display_data.html -->
+
+<html lang="en">
+<head>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lifetest List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Lokation</th>
+                <th>KundeID</th>
+                <th>MACadd</th>
+                <th>Model</th>
+                <th>SerieNr</th>
+                <th>Navn</th>
+                <th>GatewayIP</th>
+                <th>Noter</th>
+                <th>Journalsystem</th>
+                <th>Analyzers</th>
+                <th>SIMnr</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product.Lokation }}</td>
+                    <td>{{ product.KundeID }}</td>
+                    <td>{{ product.MACadd }}</td>
+                    <td>{{ product.Model }}</td>
+                    <td>{{ product.SerieNr }}</td>
+                    <td>{{ product.Navn }}</td>
+                    <td>{{ product.GatewayIP }}</td>
+                    <td>{{ product.Noter }}</td>
+                    <td>{{ product.Journalsystem }}</td>
+                    <td>{{ product.Analyzers }}</td>
+                    <td>{{ product.SIMnr }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -9,6 +9,8 @@ from .models import Product
 
 from .forms import UploadForm, ProductForm
 
+from django.shortcuts import render
+from .models import Product
 
 class UploadView(View):
 
@@ -36,3 +38,9 @@ class UploadView(View):
                 "row_count": row_count,
             }
         )
+    
+
+
+def display_data(request):
+    products = Product.objects.all()
+    return render(request, 'display_data.html', {'products': products})

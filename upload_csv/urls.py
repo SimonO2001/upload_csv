@@ -19,7 +19,11 @@ from django.urls import path
 
 from uploader.views import UploadView
 
+from django.urls import path
+from uploader import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('upload/', UploadView.as_view()),
+    path('display/', views.display_data, name='display_data'),
 ]
