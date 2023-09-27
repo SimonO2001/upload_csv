@@ -6,11 +6,11 @@ from csv import DictReader
 from io import TextIOWrapper
 from django.shortcuts import render, redirect  # Import redirect
 from .models import Product
-
 from .forms import UploadForm, ProductForm
-
 from django.shortcuts import render
-from .models import Product
+from django.shortcuts import render, get_object_or_404, redirect
+from .forms import SearchForm
+
 
 class UploadView(View):
 
@@ -38,9 +38,49 @@ class UploadView(View):
                 "row_count": row_count,
             }
         )
-    
 
+
+
+from django.shortcuts import render
+from .models import Product
+from .forms import SearchForm
 
 def display_data(request):
     products = Product.objects.all()
-    return render(request, 'display_data.html', {'products': products})
+    search_form = SearchForm(request.GET)  # Get the search form data
+
+    query = request.GET.get('query', '')  # Get the query from request GET parameters
+
+    if query:
+        products = products.filter(Lokation__icontains=query)  # Adjust the field as needed for your search
+
+    return render(request, 'display_data.html', {'products': products, 'search_form': search_form})
+
+
+
+
+
+
+def edit_product(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('display_data')  # Redirect to the data display page
+    else:
+        form = ProductForm(instance=product)
+
+    return render(request, 'edit_product.html', {'form': form})
+
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Product
+
+def delete_product(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+    if request.method == 'POST':
+        product.delete()
+        return redirect('display_data')  # Redirect to the data display page after deletion
+
+    return render(request, 'delete_product.html', {'product': product})

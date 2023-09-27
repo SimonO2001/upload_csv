@@ -1,0 +1,12 @@
+<!-- uploader/templates/uploader/edit_product.html -->
+
+<html lang="en">
+<body>
+    <h1>Edit Product</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Save Changes">
+    </form>
+</body>
+</html>

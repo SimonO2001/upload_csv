@@ -1,4 +1,4 @@
-<!-- shop/templates/upload.html -->
+<!-- uploader/templates/uploader/upload.html -->
 
 <html lang="en">
 
@@ -20,10 +20,13 @@
         {% endfor %}
         {% elif row_count %}
         <p>Successfully uploaded {{ row_count }} row(s)! 🥳</p>
-        {% endif %}
+        <!-- Add a button to redirect to the display URL -->
+        <form action="{% url 'display_data' %}" method="get">
+            <button type="submit">View Data</button>
+        </form>
+    {% endif %}
 
-        <form action="/upload/" enctype="multipart/form-data" method="post">
-
+    <!-- Rest of your HTML content -->
 </body>
 
 </html>

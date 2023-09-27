@@ -2,6 +2,7 @@
 
 from django.forms import FileField, Form, ModelForm
 from .models import Product
+from django import forms
 
 
 class ProductForm(ModelForm):
@@ -12,3 +13,8 @@ class ProductForm(ModelForm):
 
 class UploadForm(Form):
     products_file = FileField()
+
+
+
+class SearchForm(forms.Form):
+    query = forms.CharField(label='Search', required=False)
