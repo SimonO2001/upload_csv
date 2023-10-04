@@ -40,8 +40,7 @@ class UploadView(View):
         )
 
 
-
-
+from django.db.models import Q
 from django.shortcuts import render
 from .models import Product
 from .forms import SearchForm
@@ -53,9 +52,12 @@ def display_data(request):
     query = request.GET.get('query', '')  # Get the query from request GET parameters
 
     if query:
-        products = products.filter(Lokation__icontains=query)  # Adjust the field as needed for your search
+        products = products.filter(Q(Lokation__icontains=query) | Q(MACadd__icontains=query))
+        # The Q object allows you to perform OR operations on queries.
+        # Here, it filters products based on Lokation or MACadd containing the query.
 
     return render(request, 'display_data.html', {'products': products, 'search_form': search_form})
+
 
 
 

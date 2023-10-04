@@ -17,7 +17,7 @@ class UploadForm(Form):
 
 
 class SearchForm(forms.Form):
-    query = forms.CharField(label='Search for Location', required=False)
+    query = forms.CharField(label='Search for Location or MAC', required=False)
 
 
 class AddProductForm(forms.ModelForm):
