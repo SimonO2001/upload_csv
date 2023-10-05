@@ -18,7 +18,7 @@
             background-color: #f2f2f2;
         }
 
-        .edit, .delete {
+        .edit, .delete, .copy {
             text-decoration: none;
             color: black;
             margin-right: 10px;
@@ -43,12 +43,15 @@
     </style>
 </head>
 <body>
+    
     <h1>Player List</h1>
     <form method="get">
         {{ search_form.query.label_tag }}
         {{ search_form.query }}
         <button type="submit">Search</button>
     </form>
+    
+
     <div>
         <a href="{% url 'upload_data' %}" class="button search-button">Upload Data</a>
         <a href="{% url 'add_product' %}" class="button search-button">Add Row</a>
@@ -89,6 +92,7 @@
                     <td>
                         <a href="{% url 'edit_product' product.id %}" class="edit">Edit</a>
                         <a href="{% url 'delete_product' product.id %}" class="delete">Delete</a>
+                        <a href="{% url 'copy_and_edit_data' product.id %}" class="copy">Copy</a>
                     </td>
                 </tr>
             {% endfor %}

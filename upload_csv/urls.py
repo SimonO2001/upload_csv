@@ -14,4 +14,5 @@ urlpatterns = [
     path('delete/<int:product_id>/', views.delete_product, name='delete_product'),
     path('add/', views.add_product, name='add_product'),
     path('upload/', UploadView.as_view(), name='upload_data'),
+    path('copy_and_edit/<int:product_id>/', views.copy_and_edit_data, name='copy_and_edit_data'),
 ]

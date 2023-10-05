@@ -1,4 +1,4 @@
-# shop/views.py
+# uploader/views.py
 
 from django.shortcuts import render
 from django.views.generic.base import View
@@ -59,11 +59,6 @@ def display_data(request):
     return render(request, 'display_data.html', {'products': products, 'search_form': search_form})
 
 
-
-
-
-
-
 def edit_product(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
 
@@ -102,3 +97,25 @@ def add_product(request):
         form = AddProductForm()
 
     return render(request, 'add_product.html', {'form': form})
+
+# views.py
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Product
+from .forms import ProductForm
+
+def copy_and_edit_data(request, product_id):
+    original_product = get_object_or_404(Product, pk=product_id)
+    copied_product = original_product
+
+    # Modify the copied product's name to make it unique
+    copied_product.Lokation += '-copy'
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST, instance=copied_product)
+        if form.is_valid():
+            form.save()
+            return redirect('display_data')  # Redirect to the data display page
+    else:
+        form = ProductForm(instance=copied_product)
+
+    return render(request, 'edit_product.html', {'form': form})
