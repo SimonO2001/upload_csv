@@ -66,6 +66,7 @@
                         <th>Journalsystem</th>
                         <th>Analyzers</th>
                         <th>SIMnr</th>
+                        <th>Image</th>
                         <th>Company</th>
                         <th class="end">Actions</th>
                     </tr>
@@ -84,6 +85,7 @@
                         <td>{{ product.Journalsystem }}</td>
                         <td>{{ product.Analyzers }}</td>
                         <td>{{ product.SIMnr }}</td>
+                        <td>{{ product.Image}}</td>
                         <td>{{ product.company.name }}</td>
                         <td>
                             <a href="{% url 'edit_product' product.company.id product.id %}" class="btn btn-primary btn-sm">Edit</a>

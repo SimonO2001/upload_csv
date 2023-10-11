@@ -31,7 +31,7 @@ class SearchForm(forms.Form):
 class AddProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ["Lokation", "KundeID", "MACadd", "Model", "SerieNr", "Navn", "Image", "GatewayIP", "Noter", "Journalsystem", "Analyzers", "SIMnr"]
+        fields = ["Lokation", "KundeID", "MACadd", "Model", "SerieNr", "Navn", "Image", "GatewayIP", "Noter", "Journalsystem", "Analyzers", "SIMnr", "company"]
 
     
 from django import forms

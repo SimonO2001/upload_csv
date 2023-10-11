@@ -18,11 +18,5 @@
 </form>
 <a href="{% url 'display_data' %}" class="display-button">CANCEL</a>
 
-<select name="company">
-    <option value="" disabled selected>Select a Company</option>
-    {% for company in companies %}
-    <option value="{{ company.id }}">{{ company.name }}</option>
-    {% endfor %}
-</select>
 
 {% endblock %}

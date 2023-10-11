@@ -72,25 +72,25 @@ def display_data(request):
 
 
 def edit_product(request, company_id, product_id):
-    company = get_object_or_404(Company, pk=company_id)
+    # company = get_object_or_404(Company, pk=company_id)
     product = get_object_or_404(Product, pk=product_id)
 
     if request.method == 'POST':
         form = ProductForm(request.POST, instance=product)
         if form.is_valid():
             form.save()
-            return redirect('display_data', company_id=company_id)
+            return redirect('display_data')
     else:
         form = ProductForm(instance=product)
 
-    return render(request, 'edit_product.html', {'form': form, 'company': company})
+    return render(request, 'edit_product.html', {'form': form})
 
 def delete_product(request, company_id, product_id):
     product = get_object_or_404(Product, pk=product_id)
     company = get_object_or_404(Company, pk=company_id)
 
     if request.method == 'POST':
-        product.delete()
+        product.delete()       
         return redirect('display_data')  # Redirect to display_data without specifying company_id
 
     return render(request, 'delete_product.html', {'product': product, 'company': company})
@@ -100,7 +100,11 @@ def add_product(request):
     if request.method == 'POST':
         form = AddProductForm(request.POST)
         if form.is_valid():
-            form.save()
+            company_id = request.POST.get('company')  # Get the selected company ID from the form
+            company = get_object_or_404(Company, pk=company_id)  # Retrieve the company object
+            product = form.save(commit=False)
+            product.company = company  # Assign the product to the selected company
+            product.save()
             return redirect('display_data')
     else:
         form = AddProductForm()
@@ -110,18 +114,34 @@ def add_product(request):
 
 def copy_and_edit_data(request, company_id, product_id):
     original_product = get_object_or_404(Product, pk=product_id)
-    copied_product = original_product
-    copied_product.Lokation += '-copy'
+
+    # Create a new instance of the Product model for the copied product
+    copied_product = Product(
+        Lokation=original_product.Lokation + '-copy',
+        KundeID=original_product.KundeID,
+        MACadd=original_product.MACadd,
+        Model=original_product.Model,
+        SerieNr=original_product.SerieNr,
+        Navn=original_product.Navn,
+        GatewayIP=original_product.GatewayIP,
+        Noter=original_product.Noter,
+        Journalsystem=original_product.Journalsystem,
+        Analyzers=original_product.Analyzers,
+        SIMnr=original_product.SIMnr,
+        Image=original_product.Image,
+        company=original_product.company  # Assign the same company to the copied product
+    )
 
     if request.method == 'POST':
         form = ProductForm(request.POST, instance=copied_product)
         if form.is_valid():
             form.save()
-            return redirect('display_data', company_id=original_product.company.id)
+            return redirect('display_data')
     else:
         form = ProductForm(instance=copied_product)
 
-    return render(request, 'edit_product.html', {'form': form, 'company': copied_product.company})
+    return render(request, 'copy_and_edit.html', {'form': form, 'company': copied_product.company})
+
 
 def select_company(request):
     if request.method == 'POST':
