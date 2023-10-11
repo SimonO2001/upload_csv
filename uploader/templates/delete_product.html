@@ -1,52 +1,11 @@
-<!-- uploader/templates/uploader/delete_product.html -->
-
 <html lang="en">
-<style>
-    body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        margin: 0;
-    }
-
-        .display-button {
-        background-color: red; /* Green background color */
-        color: white; /* White text color */
-        border: none; /* No border */
-        padding: 10px 20px; /* Padding */
-        text-align: center; /* Center text */
-        text-decoration: none; /* No text decoration */
-        display: inline-block; /* Inline block display */
-        font-size: 16px; /* Font size */
-        margin: 4px 2px; /* Margin */
-        cursor: pointer; /* Cursor style */
-        border-radius: 4px; /* Border radius */
-    }
-
-    .delete {
-        background-color: #4CAF50; /* Green background color */
-        color: white; /* White text color */
-        border: none; /* No border */
-        padding: 10px 20px; /* Padding */
-        text-align: center; /* Center text */
-        text-decoration: none; /* No text decoration */
-        display: inline-block; /* Inline block display */
-        font-size: 16px; /* Font size */
-        margin: 4px 2px; /* Margin */
-        cursor: pointer; /* Cursor style */
-        border-radius: 4px; /* Border radius */
-    }
-</style>
-
 <body>
-    <h1>Delete Player</h1>
-    <p>Are you sure you want to delete the product "{{ product }}"?</p>
+    <h1>Confirm Deletion</h1>
+    <p>Are you sure you want to delete {{ product.name }}?</p>
     <form method="post">
         {% csrf_token %}
-        <button type="submit" class="delete">Delete</button>
+        <button type="submit">Yes, Delete</button>
     </form>
-    <a href="{% url 'display_data' %}" class="display-button">CANCEL</a>
+    <a href="{% url 'display_data' %}">Cancel</a>
 </body>
 </html>

@@ -1,102 +1,102 @@
-<!-- uploader/templates/uploader/display_data.html -->
+{% extends 'base.html' %}
 
-<html lang="en">
-<head>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th, td {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        .edit, .delete, .copy {
-            text-decoration: none;
-            color: black;
-            margin-right: 10px;
-        }
-
-        .search-button {
-        background-color: #4CAF50; /* Green background color */
-        color: white; /* White text color */
-        border: none; /* No border */
-        padding: 10px 20px; /* Padding */
-        text-align: center; /* Center text */
-        text-decoration: none; /* No text decoration */
-        display: inline-block; /* Inline block display */
-        font-size: 16px; /* Font size */
-        margin: 4px 2px; /* Margin */
-        cursor: pointer; /* Cursor style */
-        border-radius: 4px; /* Border radius */
+{% block content %}
+<style>
+    .custom-search-button {
+        background-color: #001F3F;
+        /* Replace this with your desired navbar background color */
+        color: white;
+        /* Text color */
+        border: none;
+        padding: 0.375rem 1rem;
+        /* Adjust the padding to match your preference */
+        margin: 0;
+        /* Reset margin */
     }
 
-    
+    .custom-search-button:hover,
+    .custom-search-button:active {
+        background-color: #0056b3;
+        /* Darker color when hovered or active */
+    }
 
-    </style>
-</head>
-<body>
-    
-    <h1>Player List</h1>
-    <form method="get">
-        {{ search_form.query.label_tag }}
-        {{ search_form.query }}
-        <button type="submit">Search</button>
-    </form>
-    
+    .custom-heading {
+        color: #001F3F;
+    }
+</style>
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h1 class="custom-heading">Player List</h1>
+        <form method="get" class="mb-3">
+            <div class="input-group mb-3">
+                <select class="form-control" id="companySelect" name="company_id">
+                    <option value="" selected disabled>Select a Company</option>
+                    {% for company in companies %}
+                    <option value="{{ company.id }}" {% if company.id == company_id %}selected{% endif %}>{{ company.name }}</option>
+                    {% endfor %}
+                </select>
+                <div class="input-group-append">
+                    <button class="btn btn-success custom-search-button" type="submit">Search Company</button>
+                </div>
+            </div>
+        </form>
 
-    <div>
-        <a href="{% url 'upload_data' %}" class="button search-button">Upload Data</a>
-        <a href="{% url 'add_product' %}" class="button search-button">Add Row</a>
+        <form method="get" class="mb-3">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" name="query" placeholder="Search for Location or MAC"
+                    value="{{ search_form.query.value }}">
+                <div class="input-group-append">
+                    <button class="btn btn-success custom-search-button" type="submit">Search Products</button>
+                </div>
+            </div>
+        </form>
 
+        <div class="d-flex justify-content-center">
+            <table class="table table-striped table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Lokation</th>
+                        <th>KundeID</th>
+                        <th>MACadd</th>
+                        <th>Model</th>
+                        <th>SerieNr</th>
+                        <th>Navn</th>
+                        <th>GatewayIP</th>
+                        <th>Noter</th>
+                        <th>Journalsystem</th>
+                        <th>Analyzers</th>
+                        <th>SIMnr</th>
+                        <th>Company</th>
+                        <th class="end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>{{ product.Lokation }}</td>
+                        <td>{{ product.KundeID }}</td>
+                        <td>{{ product.MACadd }}</td>
+                        <td>{{ product.Model }}</td>
+                        <td>{{ product.SerieNr }}</td>
+                        <td>{{ product.Navn }}</td>
+                        <td>{{ product.GatewayIP }}</td>
+                        <td>{{ product.Noter }}</td>
+                        <td>{{ product.Journalsystem }}</td>
+                        <td>{{ product.Analyzers }}</td>
+                        <td>{{ product.SIMnr }}</td>
+                        <td>{{ product.company.name }}</td>
+                        <td>
+                            <a href="{% url 'edit_product' product.company.id product.id %}" class="btn btn-primary btn-sm">Edit</a>
+                            <a href="{% url 'delete_product' product.company.id product.id %}"
+                                class="btn btn-danger btn-sm">Delete</a>
+                            <a href="{% url 'copy_and_edit_data' product.company.id product.id %}"
+                                class="btn btn-info btn-sm">Copy</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-    <table>
-        <thead>
-            <tr>
-                <th>Lokation</th>
-                <th>KundeID</th>
-                <th>MACadd</th>
-                <th>Model</th>
-                <th>SerieNr</th>
-                <th>Navn</th>
-                <th>GatewayIP</th>
-                <th>Noter</th>
-                <th>Journalsystem</th>
-                <th>Analyzers</th>
-                <th>SIMnr</th>
-                <th class="end">Actions</th>
-                
-            </tr>
-        </thead>
-        <tbody>
-            {% for product in products %}
-                <tr>
-                    <td>{{ product.Lokation }}</td>
-                    <td>{{ product.KundeID }}</td>
-                    <td>{{ product.MACadd }}</td>
-                    <td>{{ product.Model }}</td>
-                    <td>{{ product.SerieNr }}</td>
-                    <td>{{ product.Navn }}</td>
-                    <td>{{ product.GatewayIP }}</td>
-                    <td>{{ product.Noter }}</td>
-                    <td>{{ product.Journalsystem }}</td>
-                    <td>{{ product.Analyzers }}</td>
-                    <td>{{ product.SIMnr }}</td>
-                    <td>
-                        <a href="{% url 'edit_product' product.id %}" class="edit">Edit</a>
-                        <a href="{% url 'delete_product' product.id %}" class="delete">Delete</a>
-                        <a href="{% url 'copy_and_edit_data' product.id %}" class="copy">Copy</a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+</div>
+{% endblock %}

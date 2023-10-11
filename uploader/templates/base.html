@@ -1,0 +1,65 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View-Data</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .navbar {
+            background-color: #001F3F;
+            padding: 10px;
+        }
+
+        .navbar .navbar-brand {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: bold;
+            padding-left: 450px;
+        }
+
+        .navbar ul li a {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <a class="navbar-brand" href="{% url 'display_data' %}">
+        <img src="{% static 'images/Nord_logo_hvidt.png' %}" alt="Company Logo" height="40">
+    </a>
+
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'upload' %}" style="color: white;">Upload</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'add_product' %}" style="color: white;">Add Product</a>
+            </li>
+            <!-- Add more navigation links as needed -->
+        </ul>
+    </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</body>
+
+</html>

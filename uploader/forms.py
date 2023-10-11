@@ -1,5 +1,3 @@
-# shop/forms.py
-
 from django.forms import FileField, Form, ModelForm
 from .models import Product
 from django import forms
@@ -11,8 +9,18 @@ class ProductForm(ModelForm):
         fields = ["Lokation", "KundeID", "MACadd", "Model", "SerieNr", "Navn", "Image", "GatewayIP", "Noter", "Journalsystem", "Analyzers", "SIMnr"]
 
 
+from django.forms import FileField, Form
+from django import forms
+from .models import Company
+
+from django.forms import FileField, Form, ModelChoiceField
+from .models import Company
+
 class UploadForm(Form):
+    company = ModelChoiceField(queryset=Company.objects.all())
     products_file = FileField()
+
+
 
 
 
@@ -26,4 +34,13 @@ class AddProductForm(forms.ModelForm):
         fields = ["Lokation", "KundeID", "MACadd", "Model", "SerieNr", "Navn", "Image", "GatewayIP", "Noter", "Journalsystem", "Analyzers", "SIMnr"]
 
     
+from django import forms
+from .models import Product, Company
+
+class CompanyForm(forms.ModelForm):
+    class Meta:
+        model = Company
+        fields = ['name']
+
+
 
