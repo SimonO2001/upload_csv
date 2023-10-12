@@ -9,7 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('upload/', UploadView.as_view(), name='upload'),
     # path('', views.select_company, name='select_company'),  # Default view is select_company
-    path('display_data/', views.display_data, name='display_data'),
+    path('', views.display_data, name='display_data'),
 
     path('edit/<int:company_id>/<int:product_id>/', views.edit_product, name='edit_product'),
     path('delete/<int:company_id>/<int:product_id>/', views.delete_product, name='delete_product'),

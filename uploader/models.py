@@ -2,6 +2,9 @@ from django.db import models
 
 class Company(models.Model):
     name = models.CharField(max_length=255)
+    
+    def __str__(self):
+        return f"{self.name}"
 
 class Product(models.Model):
     Lokation = models.CharField(max_length=255)
@@ -19,7 +22,7 @@ class Product(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, db_constraint=True, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.Lokation} {self.KundeID} {self.MACadd} {self.Model} {self.SerieNr} {self.Navn} {self.Image} {self.GatewayIP} {self.Noter} {self.Journalsystem} {self.Analyzers} {self.SIMnr} {self.company}"
+        return f"{self.Lokation} {self.KundeID} {self.MACadd} {self.Model} {self.SerieNr} {self.Navn} {self.Image} {self.GatewayIP} {self.Noter} {self.Journalsystem} {self.Analyzers} {self.SIMnr}"
     
-    def __unicode__(self):
-        return self.company
+    """def __unicode__(self):
+        return self.company"""

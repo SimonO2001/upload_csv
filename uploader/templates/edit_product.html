@@ -1,12 +1,15 @@
-<html lang="en">
-<body>
-    <h1>Edit Product</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save Changes</button>
-    </form>
-    <a href="{% url 'display_data' %}">Back to Products</a>
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Edit Product</h1>
+    <form method="post"> 
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{% url 'display_data' %}" class="btn btn-secondary">Back to Products</a>
+    </form>
+</div>
+{% endblock %}

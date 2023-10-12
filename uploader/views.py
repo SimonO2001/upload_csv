@@ -39,11 +39,12 @@ class UploadView(View):
                     Journalsystem=row['Journalsystem'],
                     Analyzers=row['Analyzers'],
                     SIMnr=row['SIMnr'],
+                    Image=row['Image'],
                     company=company
                 )
                 product.save()
 
-            return redirect('display_data', company_id=company_id)
+            return redirect('display_data')
 
         return render(request, self.template_name, {'form': form})
 
@@ -72,7 +73,7 @@ def display_data(request):
 
 
 def edit_product(request, company_id, product_id):
-    # company = get_object_or_404(Company, pk=company_id)
+    company = get_object_or_404(Company, pk=company_id)
     product = get_object_or_404(Product, pk=product_id)
 
     if request.method == 'POST':
