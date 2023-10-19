@@ -26,3 +26,13 @@ class Product(models.Model):
     
     """def __unicode__(self):
         return self.company"""
+    
+from django.contrib.auth.models import AbstractUser
+
+class CustomUser(AbstractUser):
+    USER_TYPE_CHOICES = (
+        ('ADMIN', 'Admin'),
+        ('USER', 'User'),
+    )
+    user_type = models.CharField(choices=USER_TYPE_CHOICES, max_length=10)
+

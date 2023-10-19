@@ -28,6 +28,12 @@
             text-decoration: none;
             margin-right: 20px;
         }
+
+        .logged {
+            color: white;
+            margin-right: 20px;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -49,7 +55,22 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'add_product' %}" style="color: white;">Add Product</a>
                 </li>
-                <!-- Add more navigation links as needed -->
+                <!-- In your base.html, within the navbar section -->
+                <li class="nav-item align-self-center"> <!-- Added align-self-center -->
+                    <span class="logged"> <!-- Wrapped in a span -->
+                        {% if request.user.is_authenticated %}
+                        Logged in as: {{ request.user.username }} ({{ request.user.user_type }})
+                        {% else %}
+                        Not logged in
+                        {% endif %}
+                    </span>
+                </li>
+                <!-- Logout Link -->
+                {% if request.user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'user_logout' %}" style="color: white;">Logout</a>
+                </li>
+                {% endif %}
             </ul>
         </div>
     </nav>

@@ -8,15 +8,14 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('upload/', UploadView.as_view(), name='upload'),
-    # path('', views.select_company, name='select_company'),  # Default view is select_company
     path('', views.display_data, name='display_data'),
-
     path('edit/<int:company_id>/<int:product_id>/', views.edit_product, name='edit_product'),
     path('delete/<int:company_id>/<int:product_id>/', views.delete_product, name='delete_product'),
-    path('add/', views.add_product, name='add_product'),  # Updated URL without company_id
+    path('add/', views.add_product, name='add_product'),
     path('copy/<int:company_id>/<int:product_id>/', views.copy_and_edit_data, name='copy_and_edit_data'),
-    # other patterns
-    path('select_company/', views.select_company, name='select_company'),
+    # path('select_company/', views.select_company, name='select_company'),
+    path('login/', views.user_login, name='user_login'),
+    path('logout/', views.user_logout, name='user_logout'),
 ]
 
 if settings.DEBUG:

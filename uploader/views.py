@@ -6,7 +6,13 @@ from django.views.generic.base import View
 from csv import DictReader
 from io import TextIOWrapper
 import csv
+from django.contrib.auth.decorators import login_required
 
+
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+
+@method_decorator(login_required(login_url='/login/'), name='dispatch')
 class UploadView(View):
     template_name = 'upload.html'
 
@@ -48,6 +54,9 @@ class UploadView(View):
 
         return render(request, self.template_name, {'form': form})
 
+
+
+@login_required(login_url='/login/') 
 def display_data(request):
     company_id = request.GET.get('company_id')
     query = request.GET.get('query', '')
@@ -71,7 +80,7 @@ def display_data(request):
 
 
 
-
+@login_required(login_url='/login/') 
 def edit_product(request, company_id, product_id):
     company = get_object_or_404(Company, pk=company_id)
     product = get_object_or_404(Product, pk=product_id)
@@ -86,6 +95,10 @@ def edit_product(request, company_id, product_id):
 
     return render(request, 'edit_product.html', {'form': form})
 
+
+from .decorators import user_type_required  # Assuming the decorator is in a file called decorators.py
+
+@user_type_required('ADMIN')
 def delete_product(request, company_id, product_id):
     product = get_object_or_404(Product, pk=product_id)
     company = get_object_or_404(Company, pk=company_id)
@@ -96,7 +109,7 @@ def delete_product(request, company_id, product_id):
 
     return render(request, 'delete_product.html', {'product': product, 'company': company})
 
-
+@login_required(login_url='/login/') 
 def add_product(request):
     if request.method == 'POST':
         form = AddProductForm(request.POST)
@@ -113,6 +126,7 @@ def add_product(request):
     companies = Company.objects.all()
     return render(request, 'add_product.html', {'form': form, 'companies': companies})
 
+@login_required(login_url='/login/') 
 def copy_and_edit_data(request, company_id, product_id):
     original_product = get_object_or_404(Product, pk=product_id)
 
@@ -154,3 +168,28 @@ def select_company(request):
         form = CompanyForm()
     companies = Company.objects.all()
     return render(request, 'select_company.html', {'form': form, 'companies': companies})
+
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from django.http import HttpResponse
+
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            return redirect('display_data')  # Replace with the name of the view you want to redirect to
+        else:
+            return HttpResponse("Invalid login credentials")
+    else:
+        return render(request, 'login.html')  # Replace 'login.html' with your login template
+
+from django.contrib.auth import logout
+
+def user_logout(request):
+    logout(request)
+    return redirect('user_login')  # Replace 'user_login' with the name of your login view

@@ -32,7 +32,7 @@
                 <select class="form-control" id="companySelect" name="company_id">
                     <option value="" selected disabled>Select a Company</option>
                     {% for company in companies %}
-                    <option value="{{ company.id }}" {% if company.id == company_id %}selected{% endif %}>{{ company.name }}</option>
+                    <option value="{{ company.id }}" {% if company.id == company_id %} selected {% endif %}>{{ company.name}}</option>
                     {% endfor %}
                 </select>
                 <div class="input-group-append">
@@ -88,9 +88,13 @@
                         <td>{{ product.Image}}</td>
                         <td>{{ product.company.name }}</td>
                         <td>
-                            <a href="{% url 'edit_product' product.company.id product.id %}" class="btn btn-primary btn-sm">Edit</a>
+                            <a href="{% url 'edit_product' product.company.id product.id %}"
+                                class="btn btn-primary btn-sm">Edit</a>
+                            {% if request.user.user_type == 'ADMIN' %}
                             <a href="{% url 'delete_product' product.company.id product.id %}"
                                 class="btn btn-danger btn-sm">Delete</a>
+                            {% endif %}
+
                             <a href="{% url 'copy_and_edit_data' product.company.id product.id %}"
                                 class="btn btn-info btn-sm">Copy</a>
                         </td>
