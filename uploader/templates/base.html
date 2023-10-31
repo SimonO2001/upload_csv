@@ -8,6 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View-Data</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="{% static 'images/nord-logo.jpg' %}" type="image/x-icon">
+
     <style>
         .navbar {
             background-color: #001F3F;
@@ -50,25 +53,28 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'upload' %}" style="color: white;">Upload</a>
-                </li>
+                    <a class="nav-link" href="{% url 'upload' %}" style="color: white;">
+                        <i class="fas fa-upload"></i> Upload
+                    </a>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'add_product' %}" style="color: white;">Add Product</a>
-                </li>
-                <!-- In your base.html, within the navbar section -->
+                    <a class="nav-link" href="{% url 'add_product' %}" style="color: white;">
+                        <i class="fas fa-plus-square"></i> Add Product
+                    </a>
+                    <!-- In your base.html, within the navbar section -->
                 <li class="nav-item align-self-center"> <!-- Added align-self-center -->
-                    <span class="logged"> <!-- Wrapped in a span -->
+                    <span class="logged">
                         {% if request.user.is_authenticated %}
-                        Logged in as: {{ request.user.username }} ({{ request.user.user_type }})
+                        <i class="fas fa-user"></i> Logged in as: {{ request.user.username }} ({{ request.user.user_type }})
                         {% else %}
-                        Not logged in
+                        <i class="fas fa-user-slash"></i> Not logged in
                         {% endif %}
                     </span>
                 </li>
-                <!-- Logout Link -->
                 {% if request.user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'user_logout' %}" style="color: white;">Logout</a>
+                    <a class="nav-link" href="{% url 'user_logout' %}" style="color: white;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
                 </li>
                 {% endif %}
             </ul>

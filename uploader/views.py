@@ -76,10 +76,6 @@ def display_data(request):
 
     return render(request, 'display_data.html', {'products': products, 'search_form': search_form, 'companies': companies, 'company_id': company_id, 'company': company})
 
-
-
-
-
 @login_required(login_url='/login/') 
 def edit_product(request, company_id, product_id):
     company = get_object_or_404(Company, pk=company_id)
