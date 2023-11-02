@@ -3,7 +3,7 @@
 {% block content %}
 <style>
     .custom-search-button {
-        background-color: #001F3F;
+        background-color: #07486A;
         /* Replace this with your desired navbar background color */
         color: white;
         /* Text color */
@@ -21,7 +21,7 @@
     }
 
     .custom-heading {
-        color: #001F3F;
+        color: #07486A;
     }
 </style>
 <div class="container mt-5">
@@ -43,7 +43,7 @@
 
         <form method="get" class="mb-3">
             <div class="input-group mb-3">
-                <input type="text" class="form-control" name="query" placeholder="Search for Location or MAC"
+                <input type="text" class="form-control" name="query" placeholder="Search for Location, KundeID or MAC"
                     value="{{ search_form.query.value }}">
                 <div class="input-group-append">
                     <button class="btn btn-success custom-search-button" type="submit">Search Products</button>
