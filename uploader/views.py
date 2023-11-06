@@ -69,7 +69,7 @@ def display_data(request):
         company = None
 
     if query:
-        products = products.filter(Q(Lokation__icontains=query) | Q(MACadd__icontains=query))
+        products = products.filter(Q(Lokation__icontains=query) | Q(MACadd__icontains=query) | Q(KundeID__icontains=query))
 
     companies = Company.objects.all()
     search_form = SearchForm(initial={'query': query})  # Initialize the form with the search query
@@ -101,7 +101,7 @@ def delete_product(request, company_id, product_id):
 
     if request.method == 'POST':
         product.delete()       
-        return redirect('display_data')  # Redirect to display_data without specifying company_id
+        return redirect('display_data') 
 
     return render(request, 'delete_product.html', {'product': product, 'company': company})
 
@@ -178,14 +178,14 @@ def user_login(request):
         
         if user is not None:
             login(request, user)
-            return redirect('display_data')  # Replace with the name of the view you want to redirect to
+            return redirect('display_data')
         else:
             return HttpResponse("Invalid login credentials")
     else:
-        return render(request, 'login.html')  # Replace 'login.html' with your login template
+        return render(request, 'login.html')
 
 from django.contrib.auth import logout
 
 def user_logout(request):
     logout(request)
-    return redirect('user_login')  # Replace 'user_login' with the name of your login view
+    return redirect('user_login')
