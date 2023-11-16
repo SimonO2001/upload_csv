@@ -54,9 +54,53 @@ class UploadView(View):
 
         return render(request, self.template_name, {'form': form})
 
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Product, Company  # Adjust these imports to match your models
+from .forms import SearchForm  # Adjust this import to match your form
+from django.db.models import Q
+
+@login_required(login_url='/login/')
+def display_data(request):
+    # Define your default columns - adjust these to match your actual column names
+    default_columns = ['Lokation', 'KundeID', 'MACadd', 'Model', 'SerieNr', 'Navn', 'GatewayIP', 'Noter', 'Journalsystem', 'Analyzers', 'SIMnr', 'Image', 'company']
+    
+    selected_columns = request.GET.getlist('columns') if 'submitted' in request.GET else default_columns
+
+    companies = Company.objects.all()
+    # Your search functionality - adjust as necessary
+    query = request.GET.get('query', '')
+    if query:
+        products = Product.objects.filter(Q(Lokation__icontains=query) | Q(MACadd__icontains=query) | Q(KundeID__icontains=query))
+    else:
+        products = Product.objects.all()
+
+    # If you have a company filter or similar, adjust this part accordingly
+    company_id = request.GET.get('company_id')
+    if company_id:
+        products = products.filter(company__id=company_id)
+        company = get_object_or_404(Company, pk=company_id)
+    else:
+        company = None
+
+    # Instantiate your search form
+    search_form = SearchForm(initial={'query': query})
+
+    
+    # Render your template, passing the necessary context
+    return render(request, 'display_data.html', {
+        'products': products,
+        'search_form': search_form,
+        'selected_columns': selected_columns,
+        'company': company, 
+        'companies': companies, # If you're using a company filter
+        # Add any other context variables you need
+    })
+
+# Add any other views you have here
 
 
-@login_required(login_url='/login/') 
+"""@login_required(login_url='/login/') 
 def display_data(request):
     company_id = request.GET.get('company_id')
     query = request.GET.get('query', '')
@@ -75,7 +119,7 @@ def display_data(request):
     search_form = SearchForm(initial={'query': query})  # Initialize the form with the search query
 
     return render(request, 'display_data.html', {'products': products, 'search_form': search_form, 'companies': companies, 'company_id': company_id, 'company': company})
-
+"""
 @login_required(login_url='/login/') 
 def edit_product(request, company_id, product_id):
     company = get_object_or_404(Company, pk=company_id)
