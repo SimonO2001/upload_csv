@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 
+{% load static %}
+{% load custom_filters %} 
+
 {% block content %}
 <style>
     .custom-search-button {
@@ -23,86 +26,260 @@
     .custom-heading {
         color: #07486A;
     }
+    .checkbox-row label {
+    margin-right: 50px; /* Adds spacing between each checkbox */
+    }
+
+    .checkbox-rows {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    }
+
+    .checkbox-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px; /* Spacing between rows */
+    flex-basis: 100%; /* Full width */
+    }
+
+    .search-button-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-basis: 100%; /* Full width */
+    margin-top: -120px; /* Adjust as needed */
+    }
+
+    .search-button-container button {
+    background-color: #07486A; /* New button color */
+    color: white; /* Text color, assuming you want white text */
+    border: none; /* Removes the border */
+    padding: 6px 30px; /* Adjust padding for size, format: vertical horizontal */
+    /* Add more styling as needed */
+    }
+
+    th, td {
+    padding: 8px 10px; /* Reducer padding for at gøre kolonnerne smallere */
+    text-align: center;
+    font-size: 14px; /* Eventuelt reducer font-størrelsen for at spare plads */
+}
+
+
+    #myBtn {
+    display: none; /* Hidden by default */
+    position: fixed; /* Fixed/sticky position */
+    bottom: 20px; /* Place the button at the bottom of the page */
+    right: 30px; /* Place the button 30px from the right */
+    z-index: 99; /* Make sure it does not overlap */
+    border: none; /* No border */
+    outline: none; /* Remove outline */
+    background-color: #07486A; /* Set a background color */
+    color: white; /* Text color */
+    cursor: pointer; /* Add a mouse pointer on hover */
+    padding: 15px; /* Some padding */
+    border-radius: 50%; /* Round corners to make it circular */
+    font-size: 18px; /* Increase font size */
+    width: 50px; /* Fixed width */
+    height: 50px; /* Fixed height */
+    line-height: 20px; /* Center the icon vertically */
+    text-align: center; /* Center the icon horizontally */
+    transition: background-color 0.3s; /* Smooth transition for background color */
+    background-image: conic-gradient(#0056b3 0% 0%, #07486A 0% 100%); /* Initial gradient */
+}
+
+    #myBtn:hover {
+    background-color: #0056b3; /* Add a darker background on hover */
+    }
+
+    /* Styling Checkboxes */
+    input[type="checkbox"] {
+        /* Custom styles for checkboxes */
+        width: 20px; /* Checkbox size */
+        height: 20px;
+        cursor: pointer;
+        /* Add more styles as needed */
+    }
+
+    /* Styling Labels for Checkboxes */
+    .checkbox-row label {
+        margin-right: 30px; /* Adjusts spacing between each checkbox */
+        font-size: 16px; /* Adjusts font size for readability */
+        cursor: pointer;
+        /* Add more styles as needed */
+    }
+
+    /* Enhancing the visual feedback on hover */
+    .checkbox-row label:hover {
+        color: #07486A; /* Change color on hover */
+        /* Add more hover effects as needed */
+    }
+
+    .no-link-style {
+        color: inherit; /* Inherit the color from the parent element */
+        text-decoration: none; /* Removes underline from hyperlinks */
+        }
+
+    .no-link-style:hover {
+        color: inherit; /* Keep the color consistent on hover */
+        text-decoration: none; /* Optional: No underline on hover */
+        }
+
+
 </style>
-<div class="container mt-5">
-    <div class="text-center mb-4">
-        <h1 class="custom-heading">Player List</h1>
-        <form method="get" class="mb-3">
-            <div class="input-group mb-3">
-                <select class="form-control" id="companySelect" name="company_id">
-                    <option value="" selected disabled>Select a Company</option>
-                    {% for company in companies %}
-                    <option value="{{ company.id }}" {% if company.id == company_id %} selected {% endif %}>{{ company.name}}</option>
-                    {% endfor %}
-                </select>
-                <div class="input-group-append">
-                    <button class="btn btn-success custom-search-button" type="submit">Search Company</button>
+<div class="container mt-3">
+    <div class="container mt-5">
+        <div class="text-center mb-4">
+            <h1 class="custom-heading">Player List</h1>
+            <form method="get" class="mb-3">
+                <div class="input-group mb-3">
+                    <select class="form-control" id="companySelect" name="company_id">
+                        <option value="" selected disabled>Select a Company</option>
+                        {% for company in companies %}
+                        <option value="{{ company.id }}" {% if company.id == company_id %} selected {% endif %}>{{ company.name}}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="input-group-append">
+                        <button class="btn btn-success custom-search-button" type="submit">Search Company</button>
+                    </div>
                 </div>
-            </div>
-        </form>
-
-        <form method="get" class="mb-3">
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" name="query" placeholder="Search for Location, KundeID or MAC"
-                    value="{{ search_form.query.value }}">
-                <div class="input-group-append">
-                    <button class="btn btn-success custom-search-button" type="submit">Search Products</button>
+            </form>
+    
+            <form method="get" class="mb-3">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" name="query" placeholder="Search for Location, KundeID or MAC"
+                        value="{{ search_form.query.value }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-success custom-search-button" type="submit">Search Products</button>
+                    </div>
                 </div>
-            </div>
-        </form>
-
-        <div class="d-flex justify-content-center">
-            <table class="table table-striped table-bordered table-hover">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Lokation</th>
-                        <th>KundeID</th>
-                        <th>MACadd</th>
-                        <th>Model</th>
-                        <th>SerieNr</th>
-                        <th>Navn</th>
-                        <th>GatewayIP</th>
-                        <th>Noter</th>
-                        <th>Journalsystem</th>
-                        <th>Analyzers</th>
-                        <th>SIMnr</th>
-                        <th>Image</th>
-                        <th>Company</th>
-                        <th class="end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for product in products %}
-                    <tr>
-                        <td>{{ product.Lokation }}</td>
-                        <td>{{ product.KundeID }}</td>
-                        <td>{{ product.MACadd }}</td>
-                        <td>{{ product.Model }}</td>
-                        <td>{{ product.SerieNr }}</td>
-                        <td>{{ product.Navn }}</td>
-                        <td>{{ product.GatewayIP }}</td>
-                        <td>{{ product.Noter }}</td>
-                        <td>{{ product.Journalsystem }}</td>
-                        <td>{{ product.Analyzers }}</td>
-                        <td>{{ product.SIMnr }}</td>
-                        <td>{{ product.Image}}</td>
-                        <td>{{ product.company.name }}</td>
-                        <td>
-                            <a href="{% url 'edit_product' product.company.id product.id %}"
-                                class="btn btn-primary btn-sm">Edit</a>
-                            {% if request.user.user_type == 'ADMIN' %}
-                            <a href="{% url 'delete_product' product.company.id product.id %}"
-                                class="btn btn-danger btn-sm">Delete</a>
-                            {% endif %}
-
-                            <a href="{% url 'copy_and_edit_data' product.company.id product.id %}"
-                                class="btn btn-info btn-sm">Copy</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            </form>
         </div>
+
+        <form method="get">
+            <input type="hidden" name="submitted" value="true">
+            <!-- Checkboxes for column selection -->
+            <div class="checkbox-rows">
+                <div class="checkbox-row">
+                    <!-- First 6 checkboxes here -->
+                    <label><input type="checkbox" name="columns" value="Lokation" {% if "Lokation" in selected_columns %}checked{% endif %}> Lokation</label>
+                    <label><input type="checkbox" name="columns" value="KundeID" {% if "KundeID" in selected_columns %}checked{% endif %}> KundeID</label>
+                    <label><input type="checkbox" name="columns" value="MACadd" {% if "MACadd" in selected_columns %}checked{% endif %}> MACadd</label>
+                    <label><input type="checkbox" name="columns" value="Model" {% if "Model" in selected_columns %}checked{% endif %}> Model</label>
+                    <label><input type="checkbox" name="columns" value="SerieNr" {% if "SerieNr" in selected_columns %}checked{% endif %}> SerieNr</label> 
+                    <label><input type="checkbox" name="columns" value="CreatedDate" {% if "CreatedDate" in selected_columns %}checked{% endif %}> Created Date</label>
+                </div>
+                <div class="checkbox-row">
+                    <!-- Next 6 checkboxes here -->
+                    <label><input type="checkbox" name="columns" value="GatewayIP" {% if "GatewayIP" in selected_columns %}checked{% endif %}> GatewayIP</label>
+                    <label><input type="checkbox" name="columns" value="Journalsystem" {% if "Journalsystem" in selected_columns %}checked{% endif %}> Journalsystem</label>
+                    <label><input type="checkbox" name="columns" value="Analyzers" {% if "Analyzers" in selected_columns %}checked{% endif %}> Analyzers</label>
+                    <label><input type="checkbox" name="columns" value="SIMnr" {% if "SIMnr" in selected_columns %}checked{% endif %}> SIMnr</label>
+                    <label><input type="checkbox" name="columns" value="Image" {% if "Image" in selected_columns %}checked{% endif %}> Image</label>
+                    <label><input type="checkbox" name="columns" value="company" {% if "company" in selected_columns %}checked{% endif %}> Company</label> 
+                    <label><input type="checkbox" name="columns" value="AbonStart" {% if "AbonStart" in selected_columns %}checked{% endif %}> AbonStart</label> 
+                </div>
+                <div class="search-button-container">
+                    <button type="submit" class="btn btn-primary">Update View</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <button onclick="topFunction()" id="myBtn" title="Go to top"><i class="fa fa-arrow-up"></i></button>
+
+    <!-- Table generation with dynamic columns -->
+    <div class="mt-3 d-flex justify-content-center">
+        <table class="table table-striped table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    {% for column in selected_columns %}
+                    <th>
+                        {% if column in sortable_columns %}
+                        {% if request.GET.sort_by != column %}
+                        <a href="?sort_by={{ column }}&{{ request.GET.urlencode|cut:'sort_by=' }}"
+                            class="{% if column == 'Lokation' or column == 'CreatedDate' or column == 'AbonStart' %}no-link-style{% endif %}">
+                            {{ column }}
+                        </a>
+                        {% else %}
+                        <a href="?sort_by=-{{ column }}&{{ request.GET.urlencode|cut:'sort_by=' }}"
+                            class="{% if column == 'Lokation' or column == 'CreatedDate' or column == 'AbonStart' %}no-link-style{% endif %}">
+                            {{ column }}
+                        </a>
+                        {% endif %}
+                        {% else %}
+                        {{ column }}
+                        {% endif %}
+                    </th>
+                    {% endfor %}
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamically create table rows based on selected columns -->
+                {% for product in products %}
+                <tr>
+                    {% for column in selected_columns %}
+                    <td>
+                        {% if column == "CreatedDate" or column == "AbonStart" %}
+                            {{ product|get_attribute:column|date:"d-m-Y" }} <!-- Apply Danish date format -->
+                        {% else %}
+                            {{ product|get_attribute:column }} <!-- Other columns remain unchanged -->
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                    <td>
+                        <!-- Your actions here (Edit, Delete, etc.) -->
+                        <a href="{% url 'edit_product' product.company.id product.id %}" class="btn btn-primary btn-sm">Edit</a>
+                        {% if request.user.user_type == 'ADMIN' %}
+                        <a href="{% url 'delete_product' product.company.id product.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        {% endif %}
+                        <a href="{% url 'copy_and_edit_data' product.company.id product.id %}" class="btn btn-info btn-sm">Copy</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            
+        </table>
     </div>
 </div>
+<script>
+    window.onscroll = function() {
+        scrollFunction();
+        fillButton();
+    };
+
+    function scrollFunction() {
+        var myBtn = document.getElementById("myBtn");
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            myBtn.style.display = "block";
+        } else {
+            myBtn.style.display = "none";
+        }
+    }
+
+    function fillButton() {
+        var myBtn = document.getElementById("myBtn");
+        var scrollPercentage = getScrollPercentage();
+        var fillPercentage = scrollPercentage + '%';
+        myBtn.style.backgroundImage = 'conic-gradient(#0056b3 0% ' + fillPercentage + ', #07486A ' + fillPercentage + ' 100%)';
+    }
+
+    function getScrollPercentage() {
+        var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        var scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+        var clientHeight = document.documentElement.clientHeight || window.innerHeight;
+        var scrolled = (scrollTop / (scrollHeight - clientHeight)) * 100;
+        return Math.min(scrolled, 100); // Ensure it doesn't go over 100%
+    }
+
+    // When the user clicks on the button, scroll to the top of the document
+    document.getElementById("myBtn").addEventListener("click", function(){
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    });
+</script>
+
+    
+    
 {% endblock %}

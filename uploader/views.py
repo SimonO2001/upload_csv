@@ -10,7 +10,6 @@ from django.contrib.auth.decorators import login_required
 
 
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
 
 @method_decorator(login_required(login_url='/login/'), name='dispatch')
 class UploadView(View):
@@ -39,14 +38,15 @@ class UploadView(View):
                     MACadd=row['MACadd'],
                     Model=row['Model'],
                     SerieNr=row['SerieNr'],
-                    Navn=row['Navn'],
+                    CreatedDate=row['CreatedDate'],
                     GatewayIP=row['GatewayIP'],
                     Noter=row['Noter'],
                     Journalsystem=row['Journalsystem'],
                     Analyzers=row['Analyzers'],
                     SIMnr=row['SIMnr'],
                     Image=row['Image'],
-                    company=company
+                    company=company,
+                    AbonStart=row['AbonStart']
                 )
                 product.save()
 
@@ -54,27 +54,62 @@ class UploadView(View):
 
         return render(request, self.template_name, {'form': form})
 
+from django.shortcuts import render, get_object_or_404
+from .models import Product, Company  # Adjust these imports to match your models
+from .forms import SearchForm  # Adjust this import to match your form
+from django.db.models import Q
 
 
-@login_required(login_url='/login/') 
+from django.shortcuts import render, get_object_or_404
+from .models import Product, Company
+from .forms import SearchForm
+from django.db.models import Q
+from django.contrib.auth.decorators import login_required
+
+@login_required(login_url='/login/')
 def display_data(request):
-    company_id = request.GET.get('company_id')
-    query = request.GET.get('query', '')
-
-    if company_id:
-        products = Product.objects.filter(company_id=company_id)
-        company = get_object_or_404(Company, pk=company_id)
-    else:
-        products = Product.objects.all()
-        company = None
-
-    if query:
-        products = products.filter(Q(Lokation__icontains=query) | Q(MACadd__icontains=query) | Q(KundeID__icontains=query))
+    # Define your default columns - adjust these to match your actual column names
+    default_columns = ['Lokation', 'KundeID', 'MACadd', 'Model', 'SerieNr', 'GatewayIP', 'Noter', 'Journalsystem', 'Analyzers', 'SIMnr', 'Image', 'company', 'CreatedDate', "AbonStart"]
+    
+    selected_columns = request.GET.getlist('columns') if 'submitted' in request.GET else default_columns
+    sortable_columns = ['Lokation', 'CreatedDate', 'AbonStart']  # Define the sortable columns
 
     companies = Company.objects.all()
-    search_form = SearchForm(initial={'query': query})  # Initialize the form with the search query
+    # Your search functionality - adjust as necessary
+    query = request.GET.get('query', '')
+    if query:
+        products = Product.objects.filter(Q(Lokation__icontains=query) | Q(MACadd__icontains=query) | Q(KundeID__icontains=query))
+    else:
+        products = Product.objects.all()
 
-    return render(request, 'display_data.html', {'products': products, 'search_form': search_form, 'companies': companies, 'company_id': company_id, 'company': company})
+    # If you have a company filter or similar, adjust this part accordingly
+    company_id = request.GET.get('company_id')
+    if company_id:
+        products = products.filter(company__id=company_id)
+        company = get_object_or_404(Company, pk=company_id)
+    else:
+        company = None
+
+    sort_by = request.GET.get('sort_by', '')  # Get the sorting parameter from URL
+    if sort_by in sortable_columns:
+        products = products.order_by(sort_by)
+    elif sort_by in ['-{}'.format(column) for column in sortable_columns]:
+        products = products.order_by(sort_by)
+
+    # Instantiate your search form
+    search_form = SearchForm(initial={'query': query})
+
+    # Render your template, passing the necessary context
+    return render(request, 'display_data.html', {
+        'products': products,
+        'search_form': search_form,
+        'selected_columns': selected_columns,
+        'sortable_columns': sortable_columns,  # Pass the sortable columns to the template
+        'company': company, 
+        'companies': companies,
+        # Add any other context variables you need
+    })
+
 
 @login_required(login_url='/login/') 
 def edit_product(request, company_id, product_id):
@@ -133,14 +168,15 @@ def copy_and_edit_data(request, company_id, product_id):
         MACadd=original_product.MACadd,
         Model=original_product.Model,
         SerieNr=original_product.SerieNr,
-        Navn=original_product.Navn,
         GatewayIP=original_product.GatewayIP,
         Noter=original_product.Noter,
         Journalsystem=original_product.Journalsystem,
         Analyzers=original_product.Analyzers,
         SIMnr=original_product.SIMnr,
         Image=original_product.Image,
-        company=original_product.company  # Assign the same company to the copied product
+        company=original_product.company,
+        CreatedDate=original_product.CreatedDate,
+        AbonStart=original_product.AbonStart  # Assign the same company to the copied product
     )
 
     if request.method == 'POST':
