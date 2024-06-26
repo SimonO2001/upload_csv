@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'uploader'
+    'uploader',
+    'widget_tweaks'
 ]
 
 AUTH_USER_MODEL = 'uploader.CustomUser'
@@ -108,13 +109,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-us'  # Amerikansk engelsk
+TIME_ZONE = 'UTC'  
+USE_I18N = True  # Enable Django's internationalization system
+USE_L10N = True  # Enable Django's localization system
 
-TIME_ZONE = 'UTC'
-
-USE_I18N = True
-
-USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)

@@ -1,0 +1,69 @@
+
+
+{% load static %}
+{% load custom_filters %} 
+{% load custom_tags %}
+
+
+{% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <table class="table table-striped table-bordered table-hover table-sm">
+        <thead class="thead-dark">
+            <tr>
+                {% for column in selected_columns %}
+                <th>
+                    {% if column in sortable_columns %}
+                    {% if request.GET.sort_by != column %}
+                    <a href="?sort_by={{ column }}&{{ request.GET.urlencode|cut:'sort_by=' }}" class="{% if column == 'KundeNavn' or column == 'CreatedDate' or column == 'AbonStart' %}no-link-style{% endif %}">
+                        {{ column }}
+                    </a>
+                    {% else %}
+                    <a href="?sort_by=-{{ column }}&{{ request.GET.urlencode|cut:'sort_by=' }}" class="{% if column == 'KundeNavn' or column == 'CreatedDate' or column == 'AbonStart' %}no-link-style{% endif %}">
+                        {{ column }}
+                    </a>
+                    {% endif %}
+                    {% else %}
+                    {{ column }}
+                    {% endif %}
+                </th>
+                {% endfor %}
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                {% for column in selected_columns %}
+                <td class="{% if column in no_break_columns %}no-word-break{% else %}allow-word-break{% endif %} table-column" data-column="{{ column }}" data-full-text="{{ product|get_attribute:column }}">
+                    {% if column == "CreatedDate" or column == "AbonStart" or column == "WarrantyFrom" %}
+                        {{  product|get_attribute:column|date:"d-m-Y"}} <!-- Apply Danish date format -->
+                    {% elif product|get_attribute:column|length > 15 %}
+                    <span class="clickable-cell">{{ product|get_attribute:column|truncatechars:15 }}</span>
+                    {% else %}
+                    {{ product|get_attribute:column }}
+                    {% endif %}
+                </td>
+                {% endfor %}
+                <td class="action-icons">
+                    <a href="{% url 'edit_product' product.company.id product.id %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    {% if request.user.user_type == 'ADMIN' %}
+                    <a href="{% url 'delete_product' product.company.id product.id %}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'copy_and_edit_data' product.company.id product.id %}" class="btn btn-info btn-sm">
+                        <i class="fas fa-copy"></i>
+                    </a>
+                    <button class="btn btn-secondary btn-sm view-details" data-toggle="modal" data-target="#infoModal" data-product="{{ product.id }}">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

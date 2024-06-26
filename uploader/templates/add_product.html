@@ -1,15 +1,74 @@
 {% extends 'base.html' %}
 
+{% load widget_tweaks %}
+
 {% block content %}
+<style>
+    /* Custom styles for form labels */
+    .form-label {
+        margin-bottom: 0.5rem;
+        margin-top: 1rem;
+        font-weight: bold;
+    }
+    .form-control {
+        margin-top: 0.5rem;
+    }
+    .form-text {
+        margin-bottom: 1rem;
+    }
+    .invalid-feedback {
+        display: block;
+    }
+    /* Additional styles to hide form sections initially */
+    .form-section {
+        display: none;
+    }
+</style>
+
 <div class="container mt-5">
     <h1 class="mb-4">Add Product</h1>
-    <form method="post"> 
+    <form method="post" class="needs-validation" novalidate>
         {% csrf_token %}
-        <div class="mb-3">
-            {{ form.as_p }}
-        </div>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-        <a href="{% url 'display_data' %}" class="btn btn-secondary">Cancel</a>
-    </form>
-</div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="companySelect" class="form-label">Company</label>
+                <select id="companySelect" name="company" class="form-control">
+                    <option value="">Select a Company</option>
+                    {% for company in companies %}
+                    <option value="{{ company.id }}">{{ company.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="container mt-5" id="dynamic-fields-container">
+                <form method="post" class="needs-validation" novalidate>
+                    
+                </form>
+            </div>
+            
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const companySelect = document.getElementById('companySelect');
+
+    companySelect.addEventListener('change', function() {
+        const companyId = this.value;
+        // Corrected to use the template name in the explanation
+        const url = `{% url 'fetch_company_fields' %}?company_id=${companyId}`;
+
+        fetch(url, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Assumes you have a container to update with the fields
+            document.getElementById('dynamic-fields-container').innerHTML = data.html;
+        })
+        .catch(error => console.error('Error:', error));
+    });
+});
+</script>
+
+
+
+    
 {% endblock %}

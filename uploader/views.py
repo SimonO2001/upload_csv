@@ -33,8 +33,8 @@ class UploadView(View):
 
             for row in reader:
                 product = Product(
-                    Lokation=row['Lokation'],
-                    KundeID=row['KundeID'],
+                    KundeNavn=row['KundeNavn'],
+                    TunIP=row['TunIP'],
                     MACadd=row['MACadd'],
                     Model=row['Model'],
                     SerieNr=row['SerieNr'],
@@ -45,6 +45,8 @@ class UploadView(View):
                     Analyzers=row['Analyzers'],
                     SIMnr=row['SIMnr'],
                     Image=row['Image'],
+                    StorageBoxUser=row['StorageBoxUser'],
+                    WarrantyFrom=row['WarrantyFrom'],
                     company=company,
                     AbonStart=row['AbonStart']
                 )
@@ -65,50 +67,164 @@ from .models import Product, Company
 from .forms import SearchForm
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+from django.shortcuts import render
+from .models import Product, Company  # Justér dette til dine faktiske import-stier
+from django.db.models import Q
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+
+
+
+from django.shortcuts import render, get_object_or_404
+from .models import Product, Company
+from .forms import SearchForm
+from django.db.models import Q
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+
+from django.shortcuts import render, get_object_or_404
+from .models import Product, Company
+from .forms import SearchForm
+from django.db.models import Q
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 
 @login_required(login_url='/login/')
 def display_data(request):
-    # Define your default columns - adjust these to match your actual column names
-    default_columns = ['Lokation', 'KundeID', 'MACadd', 'Model', 'SerieNr', 'GatewayIP', 'Noter', 'Journalsystem', 'Analyzers', 'SIMnr', 'Image', 'company', 'CreatedDate', "AbonStart"]
+    default_columns = ['KundeNavn', 'TunIP', 'MACadd', 'Model', 'SerieNr', 'GatewayIP', 'Noter', 'Journalsystem', 'Analyzers', 'Image', 'StorageBoxUser', 'WarrantyFrom', 'CreatedDate', "AbonStart"]
     
-    selected_columns = request.GET.getlist('columns') if 'submitted' in request.GET else default_columns
-    sortable_columns = ['Lokation', 'CreatedDate', 'AbonStart']  # Define the sortable columns
-
+    if 'submitted' in request.GET or request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        selected_columns = request.GET.getlist('columns')
+    else:
+        selected_columns = default_columns
+    
+    company_id = request.GET.get('company_id')
+    if company_id in COMPANY_COLUMNS:
+        selected_columns = COMPANY_COLUMNS[company_id]  # Get company-specific columns
+    else:
+        selected_columns = default_columns  # Fallback to default columns
+    
+    sortable_columns = ['KundeNavn', 'CreatedDate', 'AbonStart']
+    products = Product.objects.all()
     companies = Company.objects.all()
-    # Your search functionality - adjust as necessary
+    products_count = products.count()
+    
     query = request.GET.get('query', '')
     if query:
-        products = Product.objects.filter(Q(Lokation__icontains=query) | Q(MACadd__icontains=query) | Q(KundeID__icontains=query))
-    else:
-        products = Product.objects.all()
-
-    # If you have a company filter or similar, adjust this part accordingly
-    company_id = request.GET.get('company_id')
-    if company_id:
-        products = products.filter(company__id=company_id)
-        company = get_object_or_404(Company, pk=company_id)
-    else:
-        company = None
-
-    sort_by = request.GET.get('sort_by', '')  # Get the sorting parameter from URL
-    if sort_by in sortable_columns:
-        products = products.order_by(sort_by)
-    elif sort_by in ['-{}'.format(column) for column in sortable_columns]:
-        products = products.order_by(sort_by)
-
-    # Instantiate your search form
+        products = products.filter(
+            Q(KundeNavn__icontains=query) | 
+            Q(TunIP__icontains=query) |
+            Q(MACadd__icontains=query) |
+            Q(Model__icontains=query) |
+            Q(SerieNr__icontains=query) |
+            Q(GatewayIP__icontains=query) |
+            Q(Noter__icontains=query) |
+            Q(Journalsystem__icontains=query) |
+            Q(Analyzers__icontains=query) |
+            Q(SIMnr__icontains=query) |
+            Q(Image__icontains=query) |
+            Q(StorageBoxUser__icontains=query) |
+            Q(WarrantyFrom__icontains=query) |
+            Q(company__name__icontains=query) |
+            Q(CreatedDate__icontains=query) |
+            Q(AbonStart__icontains=query)
+        )
+    
+    
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        html = render_to_string('products_table.html', {
+            'products': products,
+            'selected_columns': selected_columns,
+            'sortable_columns': sortable_columns,
+        }, request=request)
+        return JsonResponse({'html': html})
+    
     search_form = SearchForm(initial={'query': query})
-
-    # Render your template, passing the necessary context
     return render(request, 'display_data.html', {
         'products': products,
         'search_form': search_form,
         'selected_columns': selected_columns,
-        'sortable_columns': sortable_columns,  # Pass the sortable columns to the template
-        'company': company, 
+        'sortable_columns': sortable_columns,
         'companies': companies,
-        # Add any other context variables you need
+        'default_columns': default_columns,
+        'products_count': products_count,
     })
+
+
+
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+from .models import Product
+from django.shortcuts import get_object_or_404
+from django.db.models import Q
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+from .models import Product, Company
+from django.db.models import Q
+
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+from .models import Product
+from django.db.models import Q
+
+def fetch_products(request):
+    query = request.GET.get('query', '')
+    company_id = request.GET.get('company_id')
+    selected_columns = request.GET.getlist('columns', [])  # Adjusted to use getlist to fetch columns
+
+    products = Product.objects.all()
+
+    # Filter by company ID if provided
+    if company_id and company_id.isdigit():
+        products = products.filter(company_id=company_id)
+
+    # Apply query filters if a query is provided
+    if query:
+        products = products.filter(
+            Q(KundeNavn__icontains=query) |
+            Q(TunIP__icontains=query) |
+            Q(MACadd__icontains=query) |
+            Q(Model__icontains=query) |
+            Q(SerieNr__icontains=query) |
+            Q(GatewayIP__icontains=query) |
+            Q(Noter__icontains=query) |
+            Q(Journalsystem__icontains=query) |
+            Q(Analyzers__icontains=query) |
+            Q(SIMnr__icontains=query) |
+            Q(Image__icontains=query) |
+            Q(StorageBoxUser__icontains=query) |
+            Q(WarrantyFrom__icontains=query) |
+            Q(company__name__icontains=query) |
+            Q(CreatedDate__icontains=query) |
+            Q(AbonStart__icontains=query)
+        )
+    
+    company_id = request.GET.get('company_id')
+    if company_id and str(company_id) in COMPANY_COLUMNS:
+        selected_columns = COMPANY_COLUMNS[str(company_id)]
+    else:
+        selected_columns = ['KundeNavn', 'TunIP', 'MACadd', 'Model', 'SerieNr', 'GatewayIP', 'Noter', 'Journalsystem', 'Analyzers', 'Image', 'StorageBoxUser', 'WarrantyFrom', 'CreatedDate', "AbonStart"]
+
+    # Make sure to pass 'selected_columns' to your template for rendering
+    
+    products_count = products.count()  # Get the count of products
+
+    # Render the products table HTML
+    html = render_to_string('products_table.html', {
+        'products': products,
+        'selected_columns': selected_columns,
+    }, request=request)
+
+    return JsonResponse({'html': html, 'products_count': products_count})
+
+
+
 
 
 @login_required(login_url='/login/') 
@@ -151,20 +267,29 @@ def add_product(request):
             product.company = company  # Assign the product to the selected company
             product.save()
             return redirect('display_data')
+
     else:
         form = AddProductForm()
 
     companies = Company.objects.all()
+    # Make sure 'companies' is correctly passed to your template context
     return render(request, 'add_product.html', {'form': form, 'companies': companies})
+
+
+
+
 
 @login_required(login_url='/login/') 
 def copy_and_edit_data(request, company_id, product_id):
     original_product = get_object_or_404(Product, pk=product_id)
 
+    # Check if KundeNavn is None and handle it accordingly
+    kundeNavn_copy = (original_product.KundeNavn + '-copy') if original_product.KundeNavn else 'Unknown-copy'
+
     # Create a new instance of the Product model for the copied product
     copied_product = Product(
-        Lokation=original_product.Lokation + '-copy',
-        KundeID=original_product.KundeID,
+        KundeNavn=kundeNavn_copy,
+        TunIP=original_product.TunIP,
         MACadd=original_product.MACadd,
         Model=original_product.Model,
         SerieNr=original_product.SerieNr,
@@ -174,9 +299,11 @@ def copy_and_edit_data(request, company_id, product_id):
         Analyzers=original_product.Analyzers,
         SIMnr=original_product.SIMnr,
         Image=original_product.Image,
+        StorageBoxUser=original_product.StorageBoxUser,
+        WarrantyFrom=original_product.WarrantyFrom,
         company=original_product.company,
         CreatedDate=original_product.CreatedDate,
-        AbonStart=original_product.AbonStart  # Assign the same company to the copied product
+        AbonStart=original_product.AbonStart 
     )
 
     if request.method == 'POST':
@@ -188,6 +315,7 @@ def copy_and_edit_data(request, company_id, product_id):
         form = ProductForm(instance=copied_product)
 
     return render(request, 'copy_and_edit.html', {'form': form, 'company': copied_product.company})
+
 
 
 def select_company(request):
@@ -225,3 +353,57 @@ from django.contrib.auth import logout
 def user_logout(request):
     logout(request)
     return redirect('user_login')
+
+
+# import logging
+
+# logger = logging.getLogger(__name__)
+# def update_columns(request):
+#     # Assuming you're sending the columns as a comma-separated string
+#     selected_columns = request.GET.get('columns', '')
+#     selected_columns_list = selected_columns.split(',') if selected_columns else []
+
+#     # Your logic to fetch products based on selected columns
+#     # Assuming you have a function or logic to filter products based on these columns
+#     products = fetch_products_based_on_columns(selected_columns_list)
+#     logger.info(f"update_columns view hit with URL: {request.get_full_path()}")
+#     # Render your table or data partial with the filtered products
+#     html = render_to_string('products_table.html', {'products': products, 'selected_columns': selected_columns_list}, request=request)
+#     return JsonResponse({'html': html})
+
+
+COMPANY_COLUMNS = {
+    '7': ['KundeNavn', 'TunIP', 'MACadd', 'Model', 'SerieNr', 'GatewayIP', 'Noter', 'Journalsystem', 'Analyzers', 'SIMnr', 'Image', 'WarrantyFrom', 'StorageBoxUser', 'CreatedDate', 'AbonStart',],  
+    '6': ['KundeNavn', 'TunIP', 'MACadd', 'SerieNr', 'GatewayIP', 'Noter', 'WarrantyFrom', 'Analyzers', 'StorageBoxUser',],  # Signdesk
+    '5': ['KundeNavn', 'TunIP', 'MACadd', 'SerieNr', 'GatewayIP', 'Noter', 'WarrantyFrom', 'Analyzers', 'StorageBoxUser',],  # Lifetest
+    '4': ['KundeNavn', 'TunIP', 'MACadd', 'SerieNr', 'GatewayIP', 'Noter', 'WarrantyFrom', 'CreatedDate', 'Image', 'CreatedDate',],    # Immediad
+    # Add more as needed for each company
+}
+
+
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+
+# Assuming COMPANY_COLUMNS is defined at the top of your views.py
+
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+from .forms import AddProductForm
+
+# Assuming COMPANY_COLUMNS is defined at the top of your views.py
+
+def fetch_company_fields(request):
+    company_id = request.GET.get('company_id')
+    # Fetch relevant field names for the company
+    relevant_fields = COMPANY_COLUMNS.get(company_id, [])
+    
+    # Initialize the form
+    form = AddProductForm()
+    
+    # Dynamically adjust form to only include fields relevant to the selected company
+    form.fields = {field: form.fields[field] for field in relevant_fields if field in form.fields}
+    
+    # Render the form with the adjusted fields to HTML
+    form_fields_html = render_to_string('company_fields.html', {'form': form}, request=request)
+    
+    return JsonResponse({'html': form_fields_html})

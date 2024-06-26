@@ -1,15 +1,53 @@
 {% extends 'base.html' %}
 
+{% load widget_tweaks %}
+
 {% block content %}
+<style>
+    /* Custom styles for form labels */
+    .form-label {
+        margin-bottom: 0.01rem; /* Adjust the space below the label */
+        margin-top: 1rem;
+        font-weight: bold; /* Make the label text bold */
+    }
+
+    .form-control {
+        margin-top: 0.5rem; /* Ensure consistent spacing above form controls */
+    }
+    .form-text {
+        margin-bottom: 1rem; /* Space below help text */
+    }
+    .invalid-feedback {
+        display: block; /* Ensure visibility */
+    }
+</style>
+
 <div class="container mt-5">
     <h1 class="mb-4">Edit Product</h1>
-    <form method="post"> 
+    <form method="post" class="needs-validation" novalidate>
         {% csrf_token %}
-        <div class="mb-3">
-            {{ form.as_p }}
+        <div class="row g-3">
+            {% for field in form %}
+            <div class="col-md-6">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {% render_field field class="form-control" %}
+                {% if field.help_text %}
+                <div class="form-text">{{ field.help_text }}</div>
+                {% endif %}
+                {% if field.errors %}
+                {% for error in field.errors %}
+                <div class="invalid-feedback d-block">
+                    {{ error }}
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+            {% endfor %}
         </div>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-        <a href="{% url 'display_data' %}" class="btn btn-secondary">Back to Products</a>
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary me-2">Save Changes</button>
+            <a href="{% url 'display_data' %}" class="btn btn-secondary">Back to Products</a>
+        </div>
     </form>
 </div>
 {% endblock %}

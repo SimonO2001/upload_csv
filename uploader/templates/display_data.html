@@ -2,209 +2,360 @@
 
 {% load static %}
 {% load custom_filters %} 
+{% load custom_tags %}
 
 {% block content %}
 <style>
     .custom-search-button {
         background-color: #07486A;
-        /* Replace this with your desired navbar background color */
         color: white;
-        /* Text color */
         border: none;
         padding: 0.375rem 1rem;
-        /* Adjust the padding to match your preference */
         margin: 0;
-        /* Reset margin */
     }
 
     .custom-search-button:hover,
     .custom-search-button:active {
         background-color: #0056b3;
-        /* Darker color when hovered or active */
     }
 
     .custom-heading {
         color: #07486A;
     }
+
     .checkbox-row label {
-    margin-right: 50px; /* Adds spacing between each checkbox */
+        margin-right: 50px;
     }
 
     .checkbox-rows {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
     }
 
     .checkbox-row {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 10px; /* Spacing between rows */
-    flex-basis: 100%; /* Full width */
+        display: flex;
+        justify-content: center;
+        margin-bottom: 10px;
+        flex-basis: 100%;
     }
 
     .search-button-container {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    flex-basis: 100%; /* Full width */
-    margin-top: -120px; /* Adjust as needed */
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-basis: 100%;
+        margin-top: -120px;
     }
 
     .search-button-container button {
-    background-color: #07486A; /* New button color */
-    color: white; /* Text color, assuming you want white text */
-    border: none; /* Removes the border */
-    padding: 6px 30px; /* Adjust padding for size, format: vertical horizontal */
-    /* Add more styling as needed */
+        background-color: #07486A;
+        color: white;
+        border: none;
+        padding: 6px 30px;
     }
 
     th, td {
-    padding: 8px 10px; /* Reducer padding for at gøre kolonnerne smallere */
-    text-align: center;
-    font-size: 14px; /* Eventuelt reducer font-størrelsen for at spare plads */
-}
-
+        padding: 2px 4px; 
+        text-align: center;
+        font-size: 14px; 
+        word-wrap: break-word;
+        white-space: nowrap; /* Prevent line break */
+        vertical-align: middle; /* Ensure vertical alignment */
+    }
 
     #myBtn {
-    display: none; /* Hidden by default */
-    position: fixed; /* Fixed/sticky position */
-    bottom: 20px; /* Place the button at the bottom of the page */
-    right: 30px; /* Place the button 30px from the right */
-    z-index: 99; /* Make sure it does not overlap */
-    border: none; /* No border */
-    outline: none; /* Remove outline */
-    background-color: #07486A; /* Set a background color */
-    color: white; /* Text color */
-    cursor: pointer; /* Add a mouse pointer on hover */
-    padding: 15px; /* Some padding */
-    border-radius: 50%; /* Round corners to make it circular */
-    font-size: 18px; /* Increase font size */
-    width: 50px; /* Fixed width */
-    height: 50px; /* Fixed height */
-    line-height: 20px; /* Center the icon vertically */
-    text-align: center; /* Center the icon horizontally */
-    transition: background-color 0.3s; /* Smooth transition for background color */
-    background-image: conic-gradient(#0056b3 0% 0%, #07486A 0% 100%); /* Initial gradient */
-}
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        right: 30px;
+        z-index: 99;
+        border: none;
+        outline: none;
+        background-color: #07486A;
+        color: white;
+        cursor: pointer;
+        padding: 15px;
+        border-radius: 50%;
+        font-size: 18px;
+        width: 50px;
+        height: 50px;
+        line-height: 20px;
+        text-align: center;
+        transition: background-color 0.3s;
+        background-image: conic-gradient(#0056b3 0% 0%, #07486A 0% 100%);
+    }
 
     #myBtn:hover {
-    background-color: #0056b3; /* Add a darker background on hover */
+        background-color: #0056b3;
     }
 
-    /* Styling Checkboxes */
     input[type="checkbox"] {
-        /* Custom styles for checkboxes */
-        width: 20px; /* Checkbox size */
+        width: 20px;
         height: 20px;
         cursor: pointer;
-        /* Add more styles as needed */
     }
 
-    /* Styling Labels for Checkboxes */
     .checkbox-row label {
-        margin-right: 30px; /* Adjusts spacing between each checkbox */
-        font-size: 16px; /* Adjusts font size for readability */
+        margin-right: 30px;
+        font-size: 16px;
         cursor: pointer;
-        /* Add more styles as needed */
     }
 
-    /* Enhancing the visual feedback on hover */
     .checkbox-row label:hover {
-        color: #07486A; /* Change color on hover */
-        /* Add more hover effects as needed */
+        color: #07486A;
     }
 
     .no-link-style {
-        color: inherit; /* Inherit the color from the parent element */
-        text-decoration: none; /* Removes underline from hyperlinks */
-        }
+        color: inherit;
+        text-decoration: none;
+    }
 
     .no-link-style:hover {
-        color: inherit; /* Keep the color consistent on hover */
-        text-decoration: none; /* Optional: No underline on hover */
-        }
+        color: inherit;
+        text-decoration: none;
+    }
 
+    .company-buttons {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
 
-</style>
-<div class="container mt-3">
-    <div class="container mt-5">
-        <div class="text-center mb-4">
-            <h1 class="custom-heading">Player List</h1>
-            <form method="get" class="mb-3">
-                <div class="input-group mb-3">
-                    <select class="form-control" id="companySelect" name="company_id">
-                        <option value="" selected disabled>Select a Company</option>
-                        {% for company in companies %}
-                        <option value="{{ company.id }}" {% if company.id == company_id %} selected {% endif %}>{{ company.name}}</option>
-                        {% endfor %}
-                    </select>
-                    <div class="input-group-append">
-                        <button class="btn btn-success custom-search-button" type="submit">Search Company</button>
-                    </div>
-                </div>
-            </form>
+    .company-buttons form {
+        margin: 0;
+    }
+
+    .company-buttons button {
+        background-color: #07486A;
+        color: white;
+        border: 2px solid transparent;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        border-radius: 5px;
+        transition: background-color 0.2s, border-color 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+    }
+
+    .company-buttons button:hover,
+    .company-buttons button:focus {
+        background-color: #0056b3;
+        border-color: #fff;
+        color: #fff;
+        outline: none;
+    }
+
+    .form-control {
+        font-style: italic;
+    }
+
+    .action-bar-label {
+        text-align: center;
+        color: black;
+        margin-bottom: 0px;
+        font-size: 2rem;
+    }
+
+    .action-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .dropdown-wrapper {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        margin-right: auto;
+        margin-left: auto;
+        margin-bottom: 20px;
+    }
+
+    .dropdown-label {
+        margin-bottom: 0px;
+        text-align: right;
+        color: black;
+        font-size: 2rem;
+    }
+
+    .company-buttons, .dropdown {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+    }
+
+    .company-buttons {
+        justify-content: flex-start;
+    }
+
+    .dropdown {
+        position: relative;
+        max-width: 50%;
+    }
+
+    .card-header {
+        background-color: #07486A;
+        color: white;
+        font-size: 1em;
+        text-align: center;
+        font-weight: bolder;
+        padding: 10px;
+        margin-bottom: 0px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: none;
+    }
+
+    .rows-count-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #07486A;
+        color: white;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        border-radius: 5px;
+        text-transform: uppercase;
+        cursor: default;
+        margin-left: auto;
+        height: 38px;
+    }
+
+    .change-view-flex-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 20px;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        max-width: 100%;
+    }
+
+    #searchQuery {
+        background-color: #f8f9fa;
+        border: 2px solid #ced4da;
+        color: #495057;
+        border-radius: 0.25rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 1rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
     
-            <form method="get" class="mb-3">
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" name="query" placeholder="Search for Location, KundeID or MAC"
-                        value="{{ search_form.query.value }}">
-                    <div class="input-group-append">
-                        <button class="btn btn-success custom-search-button" type="submit">Search Products</button>
+    #searchQuery:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    #searchQuery::placeholder {
+        color: #6c757d;
+    }
+
+    .clickable-cell {
+        cursor: pointer;
+        color: #07486A; /* Different color */
+        font-weight: bold; /* Bold font to distinguish */
+        padding: 2px 4px;
+        display: inline-block;
+        transition: text-decoration 0.2s;
+        white-space: nowrap; /* Prevent line break */
+    }
+
+    .clickable-cell:hover {
+        text-decoration: underline; /* Underline on hover */
+    }
+
+    .action-icons {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
+
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Choose a company
+                </div>
+                <div class="card-body">
+                    <div class="company-buttons btn-group" role="group" aria-label="Company buttons">
+                        {% for company in companies %}
+                        <button type="button" class="btn company-button" data-company-id="{{ company.id }}" style="background-color: {% if company.id == 4 %}#ff4d00;{% elif company.id == 5 %}#232F5D;{% elif company.id == 6 %}#13D09B;{% elif company.id == 7 %}#8b0000;{% else %}#07486A;{% endif %};">
+                            {{ company.name }}
+                        </button>
+                        {% endfor %}
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
 
-        <form method="get">
-            <input type="hidden" name="submitted" value="true">
-            <!-- Checkboxes for column selection -->
-            <div class="checkbox-rows">
-                <div class="checkbox-row">
-                    <!-- First 6 checkboxes here -->
-                    <label><input type="checkbox" name="columns" value="Lokation" {% if "Lokation" in selected_columns %}checked{% endif %}> Lokation</label>
-                    <label><input type="checkbox" name="columns" value="KundeID" {% if "KundeID" in selected_columns %}checked{% endif %}> KundeID</label>
-                    <label><input type="checkbox" name="columns" value="MACadd" {% if "MACadd" in selected_columns %}checked{% endif %}> MACadd</label>
-                    <label><input type="checkbox" name="columns" value="Model" {% if "Model" in selected_columns %}checked{% endif %}> Model</label>
-                    <label><input type="checkbox" name="columns" value="SerieNr" {% if "SerieNr" in selected_columns %}checked{% endif %}> SerieNr</label> 
-                    <label><input type="checkbox" name="columns" value="CreatedDate" {% if "CreatedDate" in selected_columns %}checked{% endif %}> Created Date</label>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Change View
                 </div>
-                <div class="checkbox-row">
-                    <!-- Next 6 checkboxes here -->
-                    <label><input type="checkbox" name="columns" value="GatewayIP" {% if "GatewayIP" in selected_columns %}checked{% endif %}> GatewayIP</label>
-                    <label><input type="checkbox" name="columns" value="Journalsystem" {% if "Journalsystem" in selected_columns %}checked{% endif %}> Journalsystem</label>
-                    <label><input type="checkbox" name="columns" value="Analyzers" {% if "Analyzers" in selected_columns %}checked{% endif %}> Analyzers</label>
-                    <label><input type="checkbox" name="columns" value="SIMnr" {% if "SIMnr" in selected_columns %}checked{% endif %}> SIMnr</label>
-                    <label><input type="checkbox" name="columns" value="Image" {% if "Image" in selected_columns %}checked{% endif %}> Image</label>
-                    <label><input type="checkbox" name="columns" value="company" {% if "company" in selected_columns %}checked{% endif %}> Company</label> 
-                    <label><input type="checkbox" name="columns" value="AbonStart" {% if "AbonStart" in selected_columns %}checked{% endif %}> AbonStart</label> 
+                <div class="card-body">
+                    <div class="change-view-flex-container">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Columns
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                {% for column in default_columns %}
+                                <a class="dropdown-item">
+                                    <label>
+                                        <input type="checkbox" class="column-checkbox" name="columns" value="{{ column }}" {% if column in selected_columns %}checked{% endif %}>
+                                        {{ column }}
+                                    </label>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div id="row-count-display" class="rows-count-button">
+                            <span id="rows-count">{{ products_count }} rows found</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="search-button-container">
-                    <button type="submit" class="btn btn-primary">Update View</button>
-                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <form method="get" class="mb-3" id="searchF">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" id="searchQuery" placeholder="Search for data in table.." value="{{ search_form.query.value }}" style="text-align: center;">
             </div>
         </form>
     </div>
-
+        
     <button onclick="topFunction()" id="myBtn" title="Go to top"><i class="fa fa-arrow-up"></i></button>
 
-    <!-- Table generation with dynamic columns -->
-    <div class="mt-3 d-flex justify-content-center">
-        <table class="table table-striped table-bordered table-hover">
+    <div class="mt-3 d-flex justify-content-center" id="products-table-container">
+        <table class="table table-striped table-bordered table-hover table-sm">
             <thead class="thead-dark">
                 <tr>
                     {% for column in selected_columns %}
                     <th>
                         {% if column in sortable_columns %}
                         {% if request.GET.sort_by != column %}
-                        <a href="?sort_by={{ column }}&{{ request.GET.urlencode|cut:'sort_by=' }}"
-                            class="{% if column == 'Lokation' or column == 'CreatedDate' or column == 'AbonStart' %}no-link-style{% endif %}">
+                        <a href="?sort_by={{ column }}&{{ request.GET.urlencode|cut:'sort_by=' }}" class="{% if column == 'KundeNavn' or column == 'CreatedDate' or column == 'AbonStart' %}no-link-style{% endif %}">
                             {{ column }}
                         </a>
                         {% else %}
-                        <a href="?sort_by=-{{ column }}&{{ request.GET.urlencode|cut:'sort_by=' }}"
-                            class="{% if column == 'Lokation' or column == 'CreatedDate' or column == 'AbonStart' %}no-link-style{% endif %}">
+                        <a href="?sort_by=-{{ column }}&{{ request.GET.urlencode|cut:'sort_by=' }}" class="{% if column == 'KundeNavn' or column == 'CreatedDate' or column == 'AbonStart' %}no-link-style{% endif %}">
                             {{ column }}
                         </a>
                         {% endif %}
@@ -217,34 +368,208 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Dynamically create table rows based on selected columns -->
                 {% for product in products %}
                 <tr>
                     {% for column in selected_columns %}
-                    <td>
-                        {% if column == "CreatedDate" or column == "AbonStart" %}
-                            {{ product|get_attribute:column|date:"d-m-Y" }} <!-- Apply Danish date format -->
+                    <td class="{% if column in no_break_columns %}no-word-break{% else %}allow-word-break{% endif %} table-column" data-column="{{ column }}" data-full-text="{{ product|get_attribute:column }}">
+                        {% if column == "CreatedDate" or column == "AbonStart" or column == "WarrantyFrom" %}
+                            {{  product|get_attribute:column|date:"d-m-Y"}} <!-- Apply Danish date format -->
+                        {% elif product|get_attribute:column|length > 15 %}
+                        <span class="clickable-cell">{{ product|get_attribute:column|truncatechars:15 }}</span>
                         {% else %}
-                            {{ product|get_attribute:column }} <!-- Other columns remain unchanged -->
+                        {{ product|get_attribute:column }}
                         {% endif %}
                     </td>
                     {% endfor %}
-                    <td>
-                        <!-- Your actions here (Edit, Delete, etc.) -->
-                        <a href="{% url 'edit_product' product.company.id product.id %}" class="btn btn-primary btn-sm">Edit</a>
+                    <td class="action-icons">
+                        <a href="{% url 'edit_product' product.company.id product.id %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-edit"></i>
+                        </a>
                         {% if request.user.user_type == 'ADMIN' %}
-                        <a href="{% url 'delete_product' product.company.id product.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        <a href="{% url 'delete_product' product.company.id product.id %}" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
                         {% endif %}
-                        <a href="{% url 'copy_and_edit_data' product.company.id product.id %}" class="btn btn-info btn-sm">Copy</a>
+                        <a href="{% url 'copy_and_edit_data' product.company.id product.id %}" class="btn btn-info btn-sm">
+                            <i class="fas fa-copy"></i>
+                        </a>
+                        <button class="btn btn-secondary btn-sm view-details" data-toggle="modal" data-target="#infoModal" data-product="{{ product.id }}">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
-            
         </table>
     </div>
 </div>
+
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="infoModalLabel">Product Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="fullText"></p>
+                <button id="copyButton" class="btn btn-primary">Copy to Clipboard</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+    jQuery.noConflict();
+
+    let lastFetched = { companyId: null, searchQuery: '' };
+
+    function fetchDataForCompany(companyId = lastFetched.companyId, searchQuery = lastFetched.searchQuery) {
+        if (lastFetched.companyId === companyId && lastFetched.searchQuery === searchQuery) {
+            console.log('Avoiding redundant fetch');
+            return;
+        }
+
+        console.log(`Fetching data for company: ${companyId} with query: '${searchQuery}'`);
+        let baseUrl = `/fetch-products/?query=${encodeURIComponent(searchQuery)}`;
+        let url = companyId ? `${baseUrl}&company_id=${companyId}` : baseUrl;
+
+        fetch(url, {
+            method: 'GET',
+            headers: {'X-Requested-With': 'XMLHttpRequest'},
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('products-table-container').innerHTML = data.html;
+            document.getElementById('rows-count').textContent = `${data.products_count} rows found`;
+            updateCheckboxes();
+            updateColumnVisibility();
+        })
+        .catch(error => console.error('Error:', error));
+
+        lastFetched = { companyId, searchQuery };
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchQuery');
+        const navbar = document.getElementById('mainNavbar');
+        let debounceTimeout = null;
+        const DEBOUNCE_DELAY = 300;
+
+        const handleInputChanges = () => {
+            const searchQuery = searchInput.value.trim();
+            if (debounceTimeout) clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                fetchDataForCompany(undefined, searchQuery);
+            }, DEBOUNCE_DELAY);
+        };
+
+        searchInput.addEventListener('input', handleInputChanges);
+
+        document.querySelectorAll('.company-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const companyId = this.getAttribute('data-company-id');
+                const searchQuery = searchInput.value.trim();
+                const color = this.style.backgroundColor;
+                navbar.style.backgroundColor = color;
+
+                document.querySelectorAll('.card-header').forEach(header => {
+                    header.style.backgroundColor = color;
+                });
+                fetchDataForCompany(companyId, searchQuery);
+            });
+        });
+
+        $(document).on('click', '.view-details', function() {
+            var productId = $(this).data('product');
+            var row = $(this).closest('tr');
+            var details = [];
+            row.find('td').each(function() {
+                var column = $(this).data('column');
+                var fullText = $(this).data('full-text');
+                if (fullText && column) {
+                    details.push(`<strong>${column}:</strong> ${fullText}`);
+                }
+            });
+            $('#fullText').html(details.join('<br>'));
+            $('#infoModal').modal('show');
+        });
+
+        $('#copyButton').on('click', function() {
+            var text = $('#fullText').text();
+            navigator.clipboard.writeText(text).then(function() {
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        });
+
+        $(document).on('click', '.clickable-cell', function() {
+            var fullText = $(this).parent().data('full-text');
+            $('#fullText').text(fullText);
+            $('#infoModal').modal('show');
+        });
+    });
+
+    jQuery.noConflict();
+
+    jQuery(document).ready(function($) {
+        function updateColumnVisibility() {
+            $('.column-checkbox').each(function() {
+                var checkbox = $(this);
+                var columnName = checkbox.val();
+                var column = $('th').filter(function() {
+                    return $(this).text().trim() === columnName;
+                });
+                var columnIndex = column.index() + 1;
+
+                if (checkbox.is(':checked')) {
+                    $('td:nth-child(' + columnIndex + '), th:nth-child(' + columnIndex + ')').show();
+                } else {
+                    $('td:nth-child(' + columnIndex + '), th:nth-child(' + columnIndex + ')').hide();
+                }
+            });
+        }
+
+        function updateCheckboxes() {
+            $('table th').each(function(index) {
+                var column = $(this);
+                var columnName = column.text().trim();
+                var checkbox = $(".column-checkbox[value='" + columnName + "']");
+
+                if(column.is(':visible')) {
+                    checkbox.prop('checked', true);
+                } else {
+                    checkbox.prop('checked', false);
+                }
+            });
+        }
+
+        $('.column-checkbox').on('change', updateColumnVisibility);
+
+        $('.company-button').on('click', function() {
+            var companyId = $(this).data('company-id');
+            $('#dropdownMenuButton').prop('disabled', true).addClass('disabled-button');
+
+            $.ajax({
+                url: '/fetch-products/',
+                data: { company_id: companyId },
+                success: function(response) {
+                    $('#products-table-container').html(response.html);
+                    updateCheckboxes();
+                    updateColumnVisibility();
+                }
+            });
+        });
+
+        $('#deselect-company').on('click', function() {
+            $('#dropdownMenuButton').prop('disabled', false).removeClass('disabled-button');
+        });
+
+        updateColumnVisibility();
+    });
+
     window.onscroll = function() {
         scrollFunction();
         fillButton();
@@ -271,15 +596,11 @@
         var scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
         var clientHeight = document.documentElement.clientHeight || window.innerHeight;
         var scrolled = (scrollTop / (scrollHeight - clientHeight)) * 100;
-        return Math.min(scrolled, 100); // Ensure it doesn't go over 100%
+        return Math.min(scrolled, 100);
     }
 
-    // When the user clicks on the button, scroll to the top of the document
     document.getElementById("myBtn").addEventListener("click", function(){
         window.scrollTo({top: 0, behavior: 'smooth'});
     });
 </script>
-
-    
-    
 {% endblock %}

@@ -8,8 +8,8 @@ class Company(models.Model):
         return f"{self.name}"
 
 class Product(models.Model):
-    Lokation = models.CharField(max_length=255, null=True, blank=True)
-    KundeID = models.CharField(max_length=255, null=True, blank=True)
+    KundeNavn = models.CharField(max_length=255, null=True, blank=True)
+    TunIP = models.CharField(max_length=255, null=True, blank=True)
     MACadd = models.CharField(max_length=255, null=True, blank=True)
     Model = models.CharField(max_length=255, null=True, blank=True)
     SerieNr = models.CharField(max_length=255, null=True, blank=True)
@@ -19,12 +19,14 @@ class Product(models.Model):
     Analyzers = models.CharField(max_length=255, null=True, blank=True)
     SIMnr = models.CharField(max_length=255, null=True, blank=True)
     Image = models.CharField(max_length=255, null=True, blank=True)
+    StorageBoxUser = models.CharField(max_length=255, null=True, blank=True)
+    WarrantyFrom = models.DateTimeField (default=timezone.now, null=True, blank=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, db_constraint=True, null=True, blank=True)
     CreatedDate = models.DateTimeField(default=timezone.now, null=True, blank=True)
     AbonStart = models.DateTimeField (default=timezone.now, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.Lokation} {self.KundeID} {self.MACadd} {self.Model} {self.SerieNr} {self.Image} {self.GatewayIP} {self.Noter} {self.Journalsystem} {self.Analyzers} {self.SIMnr} {self.CreatedDate} {self.AbonStart}"
+        return f"{self.KundeNavn} {self.TunIP} {self.MACadd} {self.Model} {self.SerieNr} {self.Image} {self.StorageBoxUser} {self.WarrantyFrom} {self.GatewayIP} {self.Noter} {self.Journalsystem} {self.Analyzers} {self.SIMnr} {self.CreatedDate} {self.AbonStart}"
     
 from django.contrib.auth.models import AbstractUser
 
