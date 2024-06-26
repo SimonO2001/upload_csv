@@ -253,6 +253,7 @@ def delete_product(request, company_id, product_id):
     if request.method == 'POST':
         product.delete()       
         return redirect('display_data') 
+        return redirect('display_data') 
 
     return render(request, 'delete_product.html', {'product': product, 'company': company})
 
@@ -343,9 +344,11 @@ def user_login(request):
         if user is not None:
             login(request, user)
             return redirect('display_data')
+            return redirect('display_data')
         else:
             return HttpResponse("Invalid login credentials")
     else:
+        return render(request, 'login.html')
         return render(request, 'login.html')
 
 from django.contrib.auth import logout
