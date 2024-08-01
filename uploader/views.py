@@ -378,8 +378,8 @@ def user_logout(request):
 COMPANY_COLUMNS = {
     '7': ['KundeNavn', 'TunIP', 'MACadd', 'Model', 'SerieNr', 'GatewayIP', 'Noter', 'Journalsystem', 'Analyzers', 'SIMnr', 'Image', 'WarrantyFrom', 'StorageBoxUser', 'CreatedDate', 'AbonStart',],  
     '6': ['KundeNavn', 'TunIP', 'MACadd', 'SerieNr', 'GatewayIP', 'Noter', 'WarrantyFrom', 'Analyzers', 'StorageBoxUser',],  # Signdesk
-    '5': ['KundeNavn', 'TunIP', 'MACadd', 'SerieNr', 'GatewayIP', 'Noter', 'WarrantyFrom', 'Analyzers', 'StorageBoxUser',],  # Lifetest
-    '4': ['KundeNavn', 'TunIP', 'MACadd', 'SerieNr', 'GatewayIP', 'Noter', 'WarrantyFrom', 'CreatedDate', 'Image', 'CreatedDate',],    # Immediad
+    '5': ['KundeNavn', 'TunIP', 'MACadd', 'Model', 'SerieNr', 'GatewayIP', 'Noter', 'Journalsystem', 'Analyzers', 'SIMnr', 'Image', 'WarrantyFrom', 'StorageBoxUser', 'CreatedDate', 'AbonStart',],  # Lifetest
+    '4': ['KundeNavn', 'TunIP', 'MACadd', 'SerieNr', 'Noter', 'WarrantyFrom', 'CreatedDate', 'Image', 'CreatedDate',],    # Immediad
     # Add more as needed for each company
 }
 
